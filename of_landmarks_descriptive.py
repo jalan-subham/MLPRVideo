@@ -12,7 +12,6 @@ import warnings
 warnings.filterwarnings("ignore")
 from sklearn.svm import SVC
 from timeit import default_timer as timer
-
 class FacialLandmarksOpenFace(Dataset):
 
     def __init__(self, paths, transform=None):
@@ -24,8 +23,8 @@ class FacialLandmarksOpenFace(Dataset):
         self.transform = transform
         self.max_seq_len = 1265
         cols = pd.read_csv(self.paths[0]).columns
-        self.start_col = np.where(cols == " eye_lmk_x_0")[0][0]
-        self.end_col = np.where(cols == " eye_lmk_y_55")[0][0]
+        self.start_col = np.where(cols == " x_0")[0][0]
+        self.end_col = np.where(cols == " y_67")[0][0]
 
     def load_expressions(self, file_path):
         df = pd.read_csv(file_path)
@@ -109,5 +108,7 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy:", accuracy)
-with open("OFEyeDescriptive2D-SVM.txt", "a") as file:
+with open("OFLandmarksDescriptive2D-SVM.txt", "a") as file:
     file.write(f"{accuracy}\n")
+
+# save model 
