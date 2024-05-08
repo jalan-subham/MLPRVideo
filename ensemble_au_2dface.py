@@ -93,6 +93,7 @@ y_test_face_2d = np.array(y_test_face_2d)
 
 svc_face_2d =  SVC(probability=True)
 svc_face_2d.fit(X_train_face_2d, y_train_face_2d)
+print("Fitted Face 2D Landmarks")
 
 face_2d_probs_train = svc_face_2d.predict_proba(X_train_face_2d)
 face_2d_probs_test = svc_face_2d.predict_proba(X_test_face_2d)
@@ -121,6 +122,7 @@ y_test_au  = np.array(y_test_au)
 
 svc_au = SVC(probability=True)
 svc_au.fit(X_train_au, y_train_au)
+print("Fitted AU")
 
 au_probs_train = svc_au.predict_proba(X_train_au)
 au_probs_test = svc_au.predict_proba(X_test_au)
@@ -137,7 +139,7 @@ class EnsembleDataset(Dataset):
         return len(self.probs)
 
     def __getitem__(self, index):
-        return self.probs[index, :], self.true_labels[index, :]
+        return self.probs[index], self.true_labels[index]
 
 
 X_train_ens = np.hstack([au_probs_train[:, 1], face_2d_probs_train[:, 1]])
