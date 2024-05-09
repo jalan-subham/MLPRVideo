@@ -19,9 +19,9 @@ options = FaceLandmarkerOptions(
     base_options=BaseOptions(model_asset_path=model_path),
     running_mode=VisionRunningMode.VIDEO,
     output_face_blendshapes=True)
-start_path = "BagOfLies/Finalised/User_22/run_4/video.mp4"
+start_path = "BagOfLies/Finalised/User_14/run_6/video.mp4"
 start_idx = paths.index(start_path)
-for path in tqdm.tqdm(paths[start_idx:]):
+for path in tqdm.tqdm(paths[start_idx:start_idx+1]):
     print(f"Processing: {path}")
     landmarks = []
     blendshapes = []
@@ -35,6 +35,7 @@ for path in tqdm.tqdm(paths[start_idx:]):
             if not ret:
                 break
             timestamp = math.floor(cap.get(cv2.CAP_PROP_POS_MSEC))
+            print(timestamp)
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
             face_landmarker_result = landmarker.detect_for_video(mp_image, timestamp)
             if face_landmarker_result:

@@ -97,7 +97,7 @@ for idx in range(len(test_dataset)):
     X, y = test_dataset[idx]
     X_test.append(X.numpy())
     y_test.append(y)
-X_test = np.array(X_test)
+X_test = np.array(X_test).reshape(-1, 52 * 11)
 y_test = np.array(y_test)
 
 # Model Training

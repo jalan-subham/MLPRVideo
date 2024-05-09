@@ -17,12 +17,13 @@ def train_step(model: torch.nn.Module,
     # Setup train loss and train accuracy values
     train_loss, train_acc = 0, 0
     all_preds, all_labels = [], []
+    all_orig_preds = []
     # Loop through data loader data batches
     for batch, (X, y) in enumerate(dataloader):
         print(f"Batch: {batch}")
         # Send data to target device
         X, y = X.to(device), y.to(device)
-
+        all_orig_preds.extend(torch.Tensor.cpu(X).detach().numpy())
         # 1. Forward pass
         y_pred = model(X)
         
@@ -41,7 +42,7 @@ def train_step(model: torch.nn.Module,
         optimizer.step()
 
         # Calculate and accumulate accuracy metric across all batches
-        y_pred_class = torch.argmax(torch.softmax(y_pred, dim=1), dim=1)
+        y_pred_class = torch.round(y_pred)
         all_preds.extend(torch.Tensor.cpu(y_pred_class).detach().numpy())
         train_acc += (y_pred_class == y).sum().item()/len(y_pred)
 
@@ -49,6 +50,10 @@ def train_step(model: torch.nn.Module,
     train_loss = train_loss / len(dataloader)
     train_acc = train_acc / len(dataloader)
     auc = roc_auc_score(all_labels, all_preds)
+    all_orig_preds = torch.round(torch.tensor(all_orig_preds))
+    correct = all_orig_preds == torch.tensor(all_labels)
+    print("Original correct")
+    print(torch.sum(correct, axis = 0) / correct.shape[0])
     return train_loss, train_acc, auc
 
 def test_step(model: torch.nn.Module, 
@@ -76,7 +81,7 @@ def test_step(model: torch.nn.Module,
             test_loss += loss.item()
             
             # Calculate and accumulate accuracy        
-            test_pred_labels = test_pred_logits.argmax(dim=1)
+            test_pred_labels = torch.round(test_pred_logits)
             all_preds.extend(torch.Tensor.cpu(test_pred_labels).detach().numpy())
             all_labels.extend(torch.Tensor.cpu(y).detach().numpy())
             test_acc += ((test_pred_labels == y).sum().item()/len(test_pred_labels))
